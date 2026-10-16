@@ -1,62 +1,45 @@
-import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { useAppSelector } from '../app/hooks'
 import ErrorMessage from '../components/ErrorMessage'
 import { PostListSkeleton } from '../components/Skeleton'
-import type { SortOption } from '../features/posts/redditApi'
-import { useGetPostsQuery, useSearchPostsQuery } from '../features/posts/redditApi'
-import PostsList from '../features/posts/PostsList'
-import { setSort } from '../features/ui/uiSlice'
+import StoriesList from '../features/stories/StoriesList'
+import { useGetStoriesQuery, useSearchStoriesQuery } from '../features/stories/hnApi'
+import type { Category } from '../types/hn'
 import styles from './HomePage.module.css'
 
-const SORTS: SortOption[] = ['hot', 'new', 'top']
+const CATEGORY_LABEL: Record<Category, string> = {
+  top: 'Top Stories',
+  new: 'New Stories',
+  best: 'Best Stories',
+  ask: 'Ask HN',
+  show: 'Show HN',
+  job: 'Jobs',
+}
 
 export default function HomePage() {
-  const dispatch = useAppDispatch()
-  const { subreddit, searchTerm, sort } = useAppSelector((state) => state.ui)
+  const { category, searchTerm } = useAppSelector((state) => state.ui)
   const isSearching = searchTerm.length > 0
 
-  // Only one of these actually runs; `skip` keeps the other idle.
-  const browse = useGetPostsQuery({ subreddit, sort }, { skip: isSearching })
-  const search = useSearchPostsQuery({ subreddit, term: searchTerm }, { skip: !isSearching })
-  const active = isSearching ? search : browse
+  // Only one of these runs; `skip` keeps the other idle.
+  const feed = useGetStoriesQuery(category, { skip: isSearching })
+  const search = useSearchStoriesQuery(searchTerm, { skip: !isSearching })
+  const active = isSearching ? search : feed
 
   return (
     <div>
       <div className={styles.head}>
         <h1 className={styles.heading}>
-          {isSearching
-            ? `Results for “${searchTerm}”`
-            : subreddit === 'popular'
-              ? 'Popular'
-              : `r/${subreddit}`}
+          {isSearching ? `Results for “${searchTerm}”` : CATEGORY_LABEL[category]}
         </h1>
-
-        {!isSearching && (
-          <div className={styles.sorts} role="tablist" aria-label="Sort posts">
-            {SORTS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="tab"
-                aria-selected={sort === option}
-                className={styles.sort}
-                data-active={sort === option}
-                onClick={() => dispatch(setSort(option))}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {active.isLoading && <PostListSkeleton />}
       {active.isError && (
         <ErrorMessage
-          message="Couldn't load posts. Reddit may be rate-limiting or offline."
+          message="Couldn't load stories. Please try again."
           onRetry={() => active.refetch()}
         />
       )}
-      {active.isSuccess && <PostsList posts={active.data} />}
+      {active.isSuccess && <StoriesList stories={active.data} />}
     </div>
   )
 }

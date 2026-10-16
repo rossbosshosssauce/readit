@@ -1,6 +1,6 @@
 # readit
 
-A fast, accessible Reddit client built with **React, TypeScript, and Redux Toolkit (RTK Query)** — *read it* before you reddit. Browse popular communities, search, open a post, and read its full nested comment thread — in light or dark mode.
+A fast, accessible **Hacker News** reader built with **React, TypeScript, and Redux Toolkit (RTK Query)** — *read it* before you reddit.
 
 > **Live demo:** _add your deployed URL here after following [Deployment](#deployment)._
 
@@ -8,15 +8,19 @@ A fast, accessible Reddit client built with **React, TypeScript, and Redux Toolk
 
 ---
 
+## About this project
+
+This started as the Codecademy "Build Your Own Reddit Client" project. Partway through, Reddit **closed off its public API** — anonymous `*.json` requests now return `403`, and self-service API app creation was gated behind an approval process in late 2025. Rather than ship something that couldn't fetch live data, I **repointed the same app at the Hacker News API**, which is free, open, keyless, and CORS-friendly. The React/Redux architecture is identical; only the data layer changed.
+
 ## Features
 
-- **Browse feeds** from a set of popular communities, with **hot / new / top** sorting.
-- **Search** within a community (or across Reddit), with the input **debounced** so it doesn't fire a request per keystroke.
-- **Post detail view** with the full, **recursively rendered** comment tree — each comment collapsible.
+- **Browse** Top / New / Best / Ask HN / Show HN / Jobs feeds.
+- **Full-text search** across Hacker News (via the Algolia HN API), with the input **debounced**.
+- **Story detail view** with the full, **recursively rendered** comment thread — each comment collapsible.
 - **Light / dark theme** that follows your OS preference and remembers your choice.
 - **Skeleton loaders** while data is in flight and an **error state with retry**.
 - **Responsive** layout and real **accessibility**: keyboard navigation, visible focus rings, ARIA roles, and `prefers-reduced-motion` support.
-- **Demo‑data fallback** so the app always works, even without API credentials.
+- HN serves comment bodies as HTML, which is **sanitized with DOMPurify** before rendering.
 
 ## Tech stack
 
@@ -24,12 +28,12 @@ A fast, accessible Reddit client built with **React, TypeScript, and Redux Toolk
 | --- | --- |
 | UI | React 19 + TypeScript |
 | State | Redux Toolkit |
-| Data fetching / caching | RTK Query |
+| Data fetching / caching | RTK Query (`queryFn` endpoints) |
 | Routing | React Router |
 | Styling | CSS Modules + CSS custom properties |
+| HTML sanitizing | DOMPurify |
 | Build | Vite |
 | Tests | Vitest + Testing Library + MSW |
-| Proxy / deploy | Serverless function (Vercel) |
 
 ## Architecture
 
@@ -37,40 +41,13 @@ State is split by **who owns the data**:
 
 ```
 store
-├── redditApi   RTK Query — all server data (posts, search, comments), auto‑cached
-└── ui          plain slice — theme, current subreddit, search term, sort, demo mode
+├── hnApi   RTK Query — all server data (feeds, search, items + comments), auto‑cached
+└── ui      plain slice — theme, current category, search term
 ```
 
-Server data lives in RTK Query (no hand‑written thunks or loading booleans); only genuine UI state lives in a normal slice.
+Server data lives in RTK Query; only genuine UI state lives in a normal slice.
 
-### Why there's a proxy
-
-Reddit no longer allows anonymous requests to its public `*.json` endpoints — they return **403**. Its **OAuth API** is still open to registered apps, but a browser can't call it directly (no CORS, and the token shouldn't live in client code). So a tiny server sits in between:
-
-```
-browser ──/api/reddit?path=…──▶  proxy  ──OAuth token──▶  oauth.reddit.com
-                                   │
-                                   └── on failure the client falls back to bundled demo data
-```
-
-The same proxy logic (`server/redditClient.ts`) runs two ways:
-
-- **Locally** as Vite dev/preview middleware (`vite.config.ts`).
-- **In production** as a serverless function (`api/reddit.ts`).
-
-## Live data
-
-The app runs in **demo‑data mode** out of the box. To show live Reddit data, give it a free Reddit **client ID**:
-
-1. Go to <https://www.reddit.com/prefs/apps>.
-2. Click **create another app…**.
-3. Choose type **installed app**.
-4. Name it anything; set **redirect uri** to `http://localhost:5173` (required but unused).
-5. Create it — the **client ID** is the string shown just under the app name.
-6. Copy `.env.example` to `.env` and set `REDDIT_CLIENT_ID=<your id>`.
-7. Restart the dev server.
-
-The client ID for an installed app isn't a secret, but it's kept out of the repo anyway.
+Each Hacker News view needs more than one request — a feed is an **ID list followed by an item fetch per story**, and a thread is a **recursive walk** of nested comment ids. That orchestration lives in RTK Query **`queryFn`** endpoints (`src/features/stories/hnApi.ts`), so components still just call a hook and get `isLoading` / `isError` / `data`. The HN API sends permissive CORS headers, so the browser calls it directly — **no proxy or API key required**.
 
 ## Running locally
 
@@ -79,6 +56,8 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+No environment variables or keys needed.
+
 ## Testing
 
 ```bash
@@ -86,28 +65,27 @@ npm run test       # watch mode
 npm run test:run   # single run
 ```
 
-Tests mock the network at the `/api/reddit` boundary with **MSW**, so they never hit Reddit and cover loading, success, and the demo‑fallback paths.
+Tests mock the HN Firebase and Algolia endpoints with **MSW**, so they never hit the network and cover loading, success, and error paths.
 
 ## Deployment
 
-Deploys to **Vercel** as a static site plus one serverless function:
+It's a pure static site — deploy the `dist/` output anywhere (Vercel, Netlify, GitHub Pages):
 
 ```bash
 npm i -g vercel
 vercel            # follow the prompts
 ```
 
-Then set the `REDDIT_CLIENT_ID` (and optional `REDDIT_USER_AGENT`) environment variables in the Vercel project settings and redeploy. `vercel.json` already routes client‑side paths to `index.html` and leaves `/api/*` to the function.
-
-> Netlify works too — move `api/reddit.ts` to `netlify/functions/` and add a redirect from `/api/reddit`; the shared `server/redditClient.ts` logic is unchanged.
+`vercel.json` routes client-side paths back to `index.html` so deep links like `/item/123` work on refresh.
 
 ## What I learned
 
-- Structuring async server state with **RTK Query** instead of hand‑rolled thunks.
-- Modeling **deeply nested, recursive data** (comment trees) in TypeScript and the UI.
-- Working around a **real‑world API restriction** with an OAuth proxy and a graceful fallback.
-- Testing a data‑driven app by mocking at the network boundary.
+- Structuring async server state with **RTK Query** instead of hand-rolled thunks.
+- Orchestrating **dependent, fan-out requests** (ID lists → items, recursive comment trees) inside `queryFn`.
+- Modeling **deeply nested, recursive data** in TypeScript and the UI.
+- **Sanitizing third-party HTML** before rendering it.
+- Adapting an app's data layer when an upstream API **changes the rules** mid-project.
 
 ---
 
-Built as a portfolio project for the Codecademy Full‑Stack path.
+Built as a portfolio project for the Codecademy Full-Stack path.

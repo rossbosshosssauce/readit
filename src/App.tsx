@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { useAppSelector } from './app/hooks'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
-import PostPage from './pages/PostPage'
+import ItemPage from './pages/ItemPage'
 
 export default function App() {
   const theme = useAppSelector((state) => state.ui.theme)
@@ -17,7 +17,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/post/:postId" element={<PostPage />} />
+        <Route path="/item/:id" element={<ItemPage />} />
       </Route>
     </Routes>
   )

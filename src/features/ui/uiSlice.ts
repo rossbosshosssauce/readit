@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { SortOption } from '../posts/redditApi'
+import type { Category } from '../../types/hn'
 
 export type Theme = 'light' | 'dark'
 
@@ -22,19 +22,14 @@ function loadTheme(): Theme {
 
 interface UiState {
   theme: Theme
-  subreddit: string
+  category: Category
   searchTerm: string
-  sort: SortOption
-  /** True when the app is serving bundled demo data instead of live Reddit. */
-  demoMode: boolean
 }
 
 const initialState: UiState = {
   theme: loadTheme(),
-  subreddit: 'popular',
+  category: 'top',
   searchTerm: '',
-  sort: 'hot',
-  demoMode: false,
 }
 
 const uiSlice = createSlice({
@@ -49,22 +44,15 @@ const uiSlice = createSlice({
         // Persisting is best-effort; the toggle still works for this session.
       }
     },
-    setSubreddit(state, action: PayloadAction<string>) {
-      state.subreddit = action.payload
-      state.searchTerm = '' // switching communities clears the active search
+    setCategory(state, action: PayloadAction<Category>) {
+      state.category = action.payload
+      state.searchTerm = '' // switching categories clears the active search
     },
     setSearchTerm(state, action: PayloadAction<string>) {
       state.searchTerm = action.payload
     },
-    setSort(state, action: PayloadAction<SortOption>) {
-      state.sort = action.payload
-    },
-    setDemoMode(state, action: PayloadAction<boolean>) {
-      state.demoMode = action.payload
-    },
   },
 })
 
-export const { toggleTheme, setSubreddit, setSearchTerm, setSort, setDemoMode } =
-  uiSlice.actions
+export const { toggleTheme, setCategory, setSearchTerm } = uiSlice.actions
 export default uiSlice.reducer

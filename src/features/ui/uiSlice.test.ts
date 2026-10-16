@@ -1,17 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import reducer, {
-  setSearchTerm,
-  setSort,
-  setSubreddit,
-  toggleTheme,
-} from './uiSlice'
+import reducer, { setCategory, setSearchTerm, toggleTheme } from './uiSlice'
 
 const base = {
   theme: 'light' as const,
-  subreddit: 'popular',
+  category: 'top' as const,
   searchTerm: '',
-  sort: 'hot' as const,
-  demoMode: false,
 }
 
 describe('uiSlice', () => {
@@ -21,16 +14,16 @@ describe('uiSlice', () => {
     expect(reducer(next, toggleTheme()).theme).toBe('light')
   })
 
-  it('clears the search term when the subreddit changes', () => {
-    const searched = reducer(base, setSearchTerm('cats'))
-    expect(searched.searchTerm).toBe('cats')
+  it('clears the search term when the category changes', () => {
+    const searched = reducer(base, setSearchTerm('rust'))
+    expect(searched.searchTerm).toBe('rust')
 
-    const switched = reducer(searched, setSubreddit('science'))
-    expect(switched.subreddit).toBe('science')
+    const switched = reducer(searched, setCategory('ask'))
+    expect(switched.category).toBe('ask')
     expect(switched.searchTerm).toBe('')
   })
 
-  it('updates the sort option', () => {
-    expect(reducer(base, setSort('top')).sort).toBe('top')
+  it('updates the search term', () => {
+    expect(reducer(base, setSearchTerm('redux')).searchTerm).toBe('redux')
   })
 })

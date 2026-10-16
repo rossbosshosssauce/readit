@@ -1,10 +1,9 @@
 import { Link, Outlet } from 'react-router-dom'
 import { useAppDispatch } from '../app/hooks'
-import { setSubreddit } from '../features/ui/uiSlice'
+import { setCategory } from '../features/ui/uiSlice'
+import CategoryNav from '../features/ui/CategoryNav'
 import SearchBar from '../features/ui/SearchBar'
-import SubredditNav from '../features/ui/SubredditNav'
 import ThemeToggle from '../features/ui/ThemeToggle'
-import DemoBanner from './DemoBanner'
 import styles from './Layout.module.css'
 
 export default function Layout() {
@@ -14,13 +13,9 @@ export default function Layout() {
     <div className={styles.app}>
       <header className={styles.header}>
         <div className={styles.bar}>
-          <Link
-            to="/"
-            className={styles.brand}
-            onClick={() => dispatch(setSubreddit('popular'))}
-          >
+          <Link to="/" className={styles.brand} onClick={() => dispatch(setCategory('top'))}>
             <span className={styles.logo} aria-hidden="true">
-              👽
+              Y
             </span>
             <span>read<strong>it</strong></span>
           </Link>
@@ -28,11 +23,9 @@ export default function Layout() {
           <ThemeToggle />
         </div>
         <div className={styles.navRow}>
-          <SubredditNav />
+          <CategoryNav />
         </div>
       </header>
-
-      <DemoBanner />
 
       <main className={styles.main}>
         <Outlet />
@@ -41,8 +34,8 @@ export default function Layout() {
       <footer className={styles.footer}>
         <p>
           Built with React, TypeScript &amp; Redux Toolkit · Data from the{' '}
-          <a href="https://www.reddit.com/dev/api" target="_blank" rel="noreferrer">
-            Reddit API
+          <a href="https://github.com/HackerNews/API" target="_blank" rel="noreferrer">
+            Hacker News API
           </a>
         </p>
       </footer>

@@ -1,15 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { redditApi } from '../features/posts/redditApi'
+import { hnApi } from '../features/stories/hnApi'
 import uiReducer from '../features/ui/uiSlice'
 
 export const store = configureStore({
   reducer: {
-    [redditApi.reducerPath]: redditApi.reducer,
+    [hnApi.reducerPath]: hnApi.reducer,
     ui: uiReducer,
   },
   // RTK Query needs its middleware for caching, invalidation, polling, etc.
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(redditApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(hnApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

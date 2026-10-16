@@ -1,79 +1,59 @@
 import { http, HttpResponse } from 'msw'
-import type { CommentsResponse, PostsResponse, RedditPost } from '../types/reddit'
+import type { Story } from '../types/hn'
 
-/** Build a minimal but valid RedditPost for fixtures. */
-export function makePost(overrides: Partial<RedditPost> = {}): RedditPost {
+const HN = 'https://hacker-news.firebaseio.com/v0'
+const ALGOLIA = 'https://hn.algolia.com/api/v1'
+
+/** Build a minimal but valid Story for fixtures. */
+export function makeStory(overrides: Partial<Story> & Pick<Story, 'id'>): Story {
   return {
-    id: 'abc123',
-    title: 'Test post title',
-    author: 'test_user',
-    subreddit: 'popular',
-    subreddit_name_prefixed: 'r/popular',
-    score: 42,
-    num_comments: 7,
-    created_utc: 1_700_000_000,
-    permalink: '/r/popular/comments/abc123/test_post_title/',
+    by: 'test_user',
+    title: `Story ${overrides.id}`,
     url: 'https://example.com/article',
-    selftext: '',
-    is_self: false,
-    over_18: false,
-    stickied: false,
-    thumbnail: 'self',
+    score: 100,
+    time: 1_700_000_000,
+    descendants: 3,
+    kids: [],
+    type: 'story',
     ...overrides,
   }
 }
 
-function listing(posts: RedditPost[]): PostsResponse {
-  return {
-    kind: 'Listing',
-    data: { after: null, before: null, children: posts.map((data) => ({ kind: 't3', data })) },
-  }
-}
-
-function commentsResponse(post: RedditPost): CommentsResponse {
-  return [
-    listing([post]),
-    {
-      kind: 'Listing',
-      data: {
-        after: null,
-        before: null,
-        children: [
-          {
-            kind: 't1',
-            data: {
-              id: 'k1',
-              author: 'commenter',
-              body: 'A top-level comment',
-              score: 12,
-              created_utc: 1_700_000_500,
-              replies: '',
-            },
-          },
-        ],
-      },
-    },
-  ]
-}
-
-// The app calls /api/reddit?path=<reddit path>. These handlers branch on that
-// path to return either a feed or a single post's comments. Tests override
-// them with server.use(...) to simulate errors.
+// Default handlers model the HN Firebase + Algolia APIs. Individual tests
+// override with server.use(...).
 export const handlers = [
-  http.get('*/api/reddit', ({ request }) => {
-    const path = new URL(request.url).searchParams.get('path') ?? ''
-
-    if (path.startsWith('comments/')) {
-      return HttpResponse.json(commentsResponse(makePost({ id: '1', title: 'First post' })))
+  // Any category list returns the same two ids.
+  http.get(`${HN}/:list.json`, ({ params }) => {
+    if (String(params.list).endsWith('stories')) {
+      return HttpResponse.json([1, 2])
     }
-    if (path.startsWith('search')) {
-      return HttpResponse.json(listing([makePost({ id: 's1', title: 'Search result' })]))
-    }
-    return HttpResponse.json(
-      listing([
-        makePost({ id: '1', title: 'First post' }),
-        makePost({ id: '2', title: 'Second post', is_self: true, selftext: 'Body text' }),
-      ]),
-    )
+    return HttpResponse.json(null)
   }),
+
+  // Items by id.
+  http.get(`${HN}/item/:id.json`, ({ params }) => {
+    const id = Number(params.id)
+    const byId: Record<number, Story> = {
+      1: makeStory({ id: 1, title: 'First story' }),
+      2: makeStory({ id: 2, title: 'Second story' }),
+    }
+    return HttpResponse.json(byId[id] ?? makeStory({ id }))
+  }),
+
+  // Algolia search.
+  http.get(`${ALGOLIA}/search`, () =>
+    HttpResponse.json({
+      hits: [
+        {
+          objectID: '99',
+          title: 'Search result story',
+          url: 'https://example.com/found',
+          author: 'searcher',
+          points: 50,
+          num_comments: 4,
+          created_at_i: 1_700_000_500,
+        },
+      ],
+    }),
+  ),
 ]

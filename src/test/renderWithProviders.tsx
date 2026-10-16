@@ -3,17 +3,17 @@ import { render } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
-import { redditApi } from '../features/posts/redditApi'
+import { hnApi } from '../features/stories/hnApi'
 import uiReducer from '../features/ui/uiSlice'
 
 /** Build a fresh store for a test so cached queries never leak between them. */
 export function makeTestStore() {
   return configureStore({
     reducer: {
-      [redditApi.reducerPath]: redditApi.reducer,
+      [hnApi.reducerPath]: hnApi.reducer,
       ui: uiReducer,
     },
-    middleware: (getDefault) => getDefault().concat(redditApi.middleware),
+    middleware: (getDefault) => getDefault().concat(hnApi.middleware),
   })
 }
 

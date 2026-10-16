@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import type { CommentNode } from '../posts/redditApi'
-import { formatScore, timeAgo } from '../../utils/format'
+import SafeHtml from '../../components/SafeHtml'
+import type { CommentNode } from '../../types/hn'
+import { timeAgo } from '../../utils/format'
 import styles from './CommentThread.module.css'
 
 /** One comment plus its (collapsible) replies, rendered recursively. */
 function Comment({ comment, depth }: { comment: CommentNode; depth: number }) {
   const [collapsed, setCollapsed] = useState(false)
-  const hasReplies = comment.replies.length > 0
+  const replyCount = comment.replies.length
 
   return (
     <li className={styles.comment}>
@@ -20,17 +21,20 @@ function Comment({ comment, depth }: { comment: CommentNode; depth: number }) {
         >
           {collapsed ? '[+]' : '[–]'}
         </button>
-        <span className={styles.author}>u/{comment.author}</span>
+        <span className={styles.author}>{comment.by}</span>
         <span className={styles.dot}>·</span>
-        <span>{formatScore(comment.score)} pts</span>
-        <span className={styles.dot}>·</span>
-        <span>{timeAgo(comment.created_utc)}</span>
+        <span>{timeAgo(comment.time)}</span>
+        {collapsed && replyCount > 0 && (
+          <span className={styles.hidden}>
+            ({replyCount} {replyCount === 1 ? 'reply' : 'replies'} hidden)
+          </span>
+        )}
       </div>
 
       {!collapsed && (
         <>
-          <p className={styles.bodyText}>{comment.body}</p>
-          {hasReplies && depth < 6 && (
+          <SafeHtml className={styles.bodyText} html={comment.text} />
+          {replyCount > 0 && depth < 8 && (
             <ul className={styles.replies}>
               {comment.replies.map((reply) => (
                 <Comment key={reply.id} comment={reply} depth={depth + 1} />

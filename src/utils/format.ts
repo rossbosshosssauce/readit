@@ -4,6 +4,16 @@ export function formatScore(score: number): string {
   return `${(score / 1000).toFixed(1).replace(/\.0$/, '')}k`
 }
 
+/** Extract a bare hostname (no "www.") from a URL, or undefined if invalid. */
+export function domainOf(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return undefined
+  }
+}
+
 /** Turn a Unix (seconds) timestamp into a short "x ago" string. */
 export function timeAgo(createdUtc: number): string {
   const seconds = Math.floor(Date.now() / 1000 - createdUtc)

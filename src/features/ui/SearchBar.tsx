@@ -7,14 +7,14 @@ const DEBOUNCE_MS = 350
 
 export default function SearchBar() {
   const dispatch = useAppDispatch()
-  const subreddit = useAppSelector((state) => state.ui.subreddit)
+  const category = useAppSelector((state) => state.ui.category)
   const [value, setValue] = useState('')
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  // Clear the input when the user switches communities.
+  // Clear the input when the user switches categories.
   useEffect(() => {
     setValue('')
-  }, [subreddit])
+  }, [category])
 
   // Debounce: only push the term to the store once typing pauses.
   function handleChange(next: string) {
@@ -30,17 +30,17 @@ export default function SearchBar() {
 
   return (
     <form className={styles.form} role="search" onSubmit={(e) => e.preventDefault()}>
-      <label htmlFor="post-search" className="sr-only">
-        Search posts in {subreddit === 'popular' ? 'all of Reddit' : `r/${subreddit}`}
+      <label htmlFor="story-search" className="sr-only">
+        Search Hacker News stories
       </label>
       <span className={styles.icon} aria-hidden="true">
         🔍
       </span>
       <input
-        id="post-search"
+        id="story-search"
         type="search"
         className={styles.input}
-        placeholder={`Search ${subreddit === 'popular' ? 'Reddit' : `r/${subreddit}`}…`}
+        placeholder="Search Hacker News…"
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         autoComplete="off"
