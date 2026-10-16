@@ -1,0 +1,78 @@
+.card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--text-muted);
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 2.5rem;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  margin: 0 0 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.sub {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.title a:hover {
+  color: var(--accent);
+}
+
+.thumbWrap {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.comments:hover,
+.external:hover {
+  color: var(--accent);
+}

@@ -1,0 +1,17 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  transition: background 0.15s ease;
+}
+
+.toggle:hover {
+  background: var(--surface-hover);
+}

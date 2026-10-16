@@ -1,0 +1,74 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.75rem 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.brand strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.logo {
+  font-size: 1.4rem;
+}
+
+.navRow {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 0.75rem;
+  overflow-x: auto;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 16px;
+}
+
+.footer {
+  padding: 1.5rem 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer a {
+  color: var(--accent);
+}
+
+/* On narrow screens, let the brand hide its wordmark text to save room. */
+@media (max-width: 520px) {
+  .brand span:last-child {
+    display: none;
+  }
+}
