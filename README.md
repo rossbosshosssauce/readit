@@ -2,7 +2,7 @@
 
 A fast, accessible **Hacker News** reader built with **React, TypeScript, and Redux Toolkit (RTK Query)** — *read it* before you reddit.
 
-> **Live demo:** _add your deployed URL here after following [Deployment](#deployment)._
+> **Live demo:** **[readit-bay.vercel.app](https://readit-bay.vercel.app/)**
 
 ![Light and dark mode screenshots go here](docs/screenshot.png)
 
