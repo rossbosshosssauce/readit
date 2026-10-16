@@ -11,6 +11,9 @@
   --accent-contrast: #ffffff;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --radius: 10px;
+  /* Display face for the wordmark and section headings. Falls back to a
+     heavy system stack until the Kubo font file is added (see @font-face). */
+  --font-display: 'Kubo', 'Arial Black', system-ui, sans-serif;
 }
 
 :root[data-theme='dark'] {
