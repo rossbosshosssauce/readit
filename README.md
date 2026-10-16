@@ -86,6 +86,11 @@ vercel            # follow the prompts
 - **Sanitizing third-party HTML** before rendering it.
 - Adapting an app's data layer when an upstream API **changes the rules** mid-project.
 
+## Credits
+
+- Data: the [Hacker News API](https://github.com/HackerNews/API) and the [Algolia HN Search API](https://hn.algolia.com/api).
+- Display font: **KUBO** by [Else Studio](https://www.behance.net/elsestudio1), licensed under the SIL Open Font License.
+
 ---
 
 Built as a portfolio project for the Codecademy Full-Stack path.

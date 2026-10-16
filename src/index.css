@@ -1,3 +1,15 @@
+/* ---- Fonts ---------------------------------------------------------- */
+/* KUBO — geometric display face by Else Studio, SIL OFL licensed.
+   See src/assets/fonts/KUBO-OFL-LICENSE.txt. Used only for the wordmark
+   and section headings, never body text. */
+@font-face {
+  font-family: 'Kubo';
+  src: url('./assets/fonts/KUBO.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---- Design tokens -------------------------------------------------- */
 :root,
 :root[data-theme='light'] {
