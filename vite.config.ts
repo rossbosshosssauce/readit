@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
   // Load every env var (empty prefix), not just VITE_-prefixed ones, so the
   // server-side client ID stays out of the client bundle.
   const env = loadEnv(mode, process.cwd(), '')
-  const userAgent = env.REDDIT_USER_AGENT || 'web:reddit-client:v1.0 (portfolio project)'
+  const userAgent = env.REDDIT_USER_AGENT || 'web:readit:v1.0 (portfolio project)'
 
   return {
     plugins: [react(), redditProxyPlugin(env.REDDIT_CLIENT_ID, userAgent)],

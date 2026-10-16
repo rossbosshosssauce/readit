@@ -9,7 +9,7 @@
 
 const TOKEN_URL = 'https://www.reddit.com/api/v1/access_token'
 const API_BASE = 'https://oauth.reddit.com'
-const DEFAULT_UA = 'web:reddit-client:v1.0 (portfolio project)'
+const DEFAULT_UA = 'web:readit:v1.0 (portfolio project)'
 
 interface CachedToken {
   value: string

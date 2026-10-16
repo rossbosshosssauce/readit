@@ -22,7 +22,7 @@ export default function Layout() {
             <span className={styles.logo} aria-hidden="true">
               👽
             </span>
-            <span>reddit<strong>client</strong></span>
+            <span>read<strong>it</strong></span>
           </Link>
           <SearchBar />
           <ThemeToggle />

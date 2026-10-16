@@ -1,6 +1,6 @@
-# reddit‑client
+# readit
 
-A fast, accessible Reddit client built with **React, TypeScript, and Redux Toolkit (RTK Query)**. Browse popular communities, search, open a post, and read its full nested comment thread — in light or dark mode.
+A fast, accessible Reddit client built with **React, TypeScript, and Redux Toolkit (RTK Query)** — *read it* before you reddit. Browse popular communities, search, open a post, and read its full nested comment thread — in light or dark mode.
 
 > **Live demo:** _add your deployed URL here after following [Deployment](#deployment)._
 

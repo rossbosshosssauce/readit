@@ -11,7 +11,7 @@ export default function DemoBanner() {
       ⚠️ Showing <strong>demo data</strong> — Reddit requires API credentials for
       live posts. See the{' '}
       <a
-        href="https://github.com/rossbosshosssauce/reddit-client#live-data"
+        href="https://github.com/rossbosshosssauce/readit#live-data"
         target="_blank"
         rel="noreferrer"
       >

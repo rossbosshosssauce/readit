@@ -4,7 +4,7 @@ import type { SortOption } from '../posts/redditApi'
 
 export type Theme = 'light' | 'dark'
 
-const THEME_KEY = 'reddit-client-theme'
+const THEME_KEY = 'readit-theme'
 
 /** Read the saved theme, falling back to the OS preference. Never throws. */
 function loadTheme(): Theme {
