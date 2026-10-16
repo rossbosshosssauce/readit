@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import type { PostsResponse, RedditPost } from '../types/reddit'
+import type { CommentsResponse, PostsResponse, RedditPost } from '../types/reddit'
 
 /** Build a minimal but valid RedditPost for fixtures. */
 export function makePost(overrides: Partial<RedditPost> = {}): RedditPost {
@@ -26,19 +26,49 @@ export function makePost(overrides: Partial<RedditPost> = {}): RedditPost {
 function listing(posts: RedditPost[]): PostsResponse {
   return {
     kind: 'Listing',
-    data: {
-      after: null,
-      before: null,
-      children: posts.map((data) => ({ kind: 't3', data })),
-    },
+    data: { after: null, before: null, children: posts.map((data) => ({ kind: 't3', data })) },
   }
 }
 
-// Default handlers return a small feed. Individual tests override as needed
-// via server.use(...).
+function commentsResponse(post: RedditPost): CommentsResponse {
+  return [
+    listing([post]),
+    {
+      kind: 'Listing',
+      data: {
+        after: null,
+        before: null,
+        children: [
+          {
+            kind: 't1',
+            data: {
+              id: 'k1',
+              author: 'commenter',
+              body: 'A top-level comment',
+              score: 12,
+              created_utc: 1_700_000_500,
+              replies: '',
+            },
+          },
+        ],
+      },
+    },
+  ]
+}
+
+// The app calls /api/reddit?path=<reddit path>. These handlers branch on that
+// path to return either a feed or a single post's comments. Tests override
+// them with server.use(...) to simulate errors.
 export const handlers = [
-  http.get('https://www.reddit.com/r/:subreddit/:sort.json', ({ params }) => {
-    if (params.sort === 'search.json') return HttpResponse.json(listing([]))
+  http.get('*/api/reddit', ({ request }) => {
+    const path = new URL(request.url).searchParams.get('path') ?? ''
+
+    if (path.startsWith('comments/')) {
+      return HttpResponse.json(commentsResponse(makePost({ id: '1', title: 'First post' })))
+    }
+    if (path.startsWith('search')) {
+      return HttpResponse.json(listing([makePost({ id: 's1', title: 'Search result' })]))
+    }
     return HttpResponse.json(
       listing([
         makePost({ id: '1', title: 'First post' }),
@@ -46,7 +76,4 @@ export const handlers = [
       ]),
     )
   }),
-  http.get('https://www.reddit.com/search.json', () =>
-    HttpResponse.json(listing([makePost({ id: 's1', title: 'Search result' })])),
-  ),
 ]

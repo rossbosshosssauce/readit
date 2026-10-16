@@ -25,6 +25,8 @@ interface UiState {
   subreddit: string
   searchTerm: string
   sort: SortOption
+  /** True when the app is serving bundled demo data instead of live Reddit. */
+  demoMode: boolean
 }
 
 const initialState: UiState = {
@@ -32,6 +34,7 @@ const initialState: UiState = {
   subreddit: 'popular',
   searchTerm: '',
   sort: 'hot',
+  demoMode: false,
 }
 
 const uiSlice = createSlice({
@@ -56,8 +59,12 @@ const uiSlice = createSlice({
     setSort(state, action: PayloadAction<SortOption>) {
       state.sort = action.payload
     },
+    setDemoMode(state, action: PayloadAction<boolean>) {
+      state.demoMode = action.payload
+    },
   },
 })
 
-export const { toggleTheme, setSubreddit, setSearchTerm, setSort } = uiSlice.actions
+export const { toggleTheme, setSubreddit, setSearchTerm, setSort, setDemoMode } =
+  uiSlice.actions
 export default uiSlice.reducer

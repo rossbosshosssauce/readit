@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import { server } from '../test/server'
@@ -16,17 +16,14 @@ describe('HomePage', () => {
     expect(screen.getByText('Second post')).toBeInTheDocument()
   })
 
-  it('shows an error state with a retry button when the API fails', async () => {
+  it('falls back to demo data when the proxy fails', async () => {
     server.use(
-      http.get('https://www.reddit.com/r/:subreddit/:sort.json', () =>
-        HttpResponse.json({ message: 'boom' }, { status: 500 }),
-      ),
+      http.get('*/api/reddit', () => HttpResponse.json({ error: 'boom' }, { status: 502 })),
     )
 
     renderWithProviders(<HomePage />)
 
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument(),
-    )
+    // A demo post (its title is unique to the bundled fixtures) should appear.
+    expect(await screen.findByText(/without any API keys/i)).toBeInTheDocument()
   })
 })

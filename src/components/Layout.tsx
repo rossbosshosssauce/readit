@@ -4,6 +4,7 @@ import { setSubreddit } from '../features/ui/uiSlice'
 import SearchBar from '../features/ui/SearchBar'
 import SubredditNav from '../features/ui/SubredditNav'
 import ThemeToggle from '../features/ui/ThemeToggle'
+import DemoBanner from './DemoBanner'
 import styles from './Layout.module.css'
 
 export default function Layout() {
@@ -30,6 +31,8 @@ export default function Layout() {
           <SubredditNav />
         </div>
       </header>
+
+      <DemoBanner />
 
       <main className={styles.main}>
         <Outlet />

@@ -11,6 +11,7 @@ const base = {
   subreddit: 'popular',
   searchTerm: '',
   sort: 'hot' as const,
+  demoMode: false,
 }
 
 describe('uiSlice', () => {

@@ -9,7 +9,7 @@ import styles from './PostPage.module.css'
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>()
   const { data, isLoading, isError, isSuccess, refetch } = useGetCommentsQuery(
-    `comments/${postId}`,
+    postId ?? '',
     { skip: !postId },
   )
 
